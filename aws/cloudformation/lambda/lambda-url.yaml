@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Cloudformation template for deploying a lambda with a url"
+Resources:
+  MattsLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: my lambda with a url
+      FunctionName: MattsTestLambda
+      Handler: index.handler
+      MemorySize: 128
+      Runtime: nodejs14.x
+      Timeout: 5
+      Role: {{ ADD YOUR ROLE ARN HERE }} ## replace with role ARN or create one and reference it here
+      Code:
+        S3Bucket: mybucket
+        S3Key: mycode.js
+  ## next lets create the url for the function above.
+  MattsLambdaURL:
+    Type: AWS::Lambda::Url
+    DependsOn: MattsLambda
+    Properties:
+      AuthType: NONE
+      TargetFunctionArn: !GetAtt MattsLambda.Arn ## Reference back to the lambda to get the ARN
